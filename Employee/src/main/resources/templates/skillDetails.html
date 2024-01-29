@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Skill Details</title>
+</head>
+<body>
+
+<h2>Employee Skill Details</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Employee ID</th>
+        <th>Employee Name</th>
+        <th>Skill ID</th>
+        <th>Skill Name</th>
+        <th>Proficiency</th>
+        <th>Experience</th>
+        <th>Certification Source</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="employeeSkill : ${employeeSkills}">
+        <td th:text="${employeeSkill.login_det.empid}"></td>
+        <td th:text="${employeeSkill.login_det.fullname}"></td>
+        <td th:text="${employeeSkill.skills.skillid}"></td>
+        <td th:text="${employeeSkill.skills.skillname}"></td>
+        <td th:text="${employeeSkill.proficiency}"></td>
+        <td th:text="${employeeSkill.exp}"></td>
+        <td th:text="${employeeSkill.cert_source}"></td>
+    </tr>
+    </tbody>
+    </table>
+</body>
+</html>
+
+
+

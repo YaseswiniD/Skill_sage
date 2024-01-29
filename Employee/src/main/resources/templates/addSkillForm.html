@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Skill</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            max-width: 400px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsive layout for smaller screens */
+        @media screen and (max-width: 600px) {
+            form {
+                width: 80%;
+            }
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .new-input {
+            margin-top: 8px;
+            display: none; /* Initially hide the new input container */
+        }
+    </style>
+</head>
+<body>
+
+<form th:action="@{/addSkill}" method="post" onsubmit="return validateForm()">
+    <div class="input-container">
+        <label for="domain">Domain:</label>
+        <select id="domain" name="domain" required onchange="updateSubdomains()">
+            <option value="" disabled selected>Select Domain</option>
+            <option value="other">Other</option>
+            <option th:each="domain : ${allDomains}" th:value="${domain}" th:text="${domain}"></option>
+        </select>
+        <div id="newDomainContainer" class="new-input">
+            <label for="newDomain">New Domain:</label>
+            <input type="text" id="newDomain" name="newDomain" required>
+        </div>
+    </div>
+    <div class="input-container">
+        <label for="subdomain">Sub Domain:</label>
+        <select id="subdomain" name="subdomain" required th:disabled="${#strings.equals(domain, 'other')}">
+            <option value="" disabled selected>Select Subdomain</option>
+            <option value="other">Other</option>
+        </select>
+        <div id="newSubdomainContainer" class="new-input">
+            <label for="newSubdomain">New Subdomain:</label>
+            <input type="text" id="newSubdomain" name="newSubdomain" required>
+        </div>
+    </div>
+    <div class="input-container">
+        <label for="skillname">Skill Name:</label>
+        <input type="text" id="skillname" name="skillname" required>
+    </div>
+    <button type="submit">Add Skill</button>
+</form>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var allSubdomainsByDomain = /*[[${allSubdomainsByDomain}]]*/ {}; // Map of domains to subdomains
+
+    function updateSubdomains() {
+        var domainSelect = document.getElementById('domain');
+        var subdomainSelect = document.getElementById('subdomain');
+        var newDomainContainer = document.getElementById('newDomainContainer');
+        var newSubdomainContainer = document.getElementById('newSubdomainContainer');
+        var selectedDomain = domainSelect.value;
+
+        // Clear existing options
+        subdomainSelect.innerHTML = "<option value='' disabled selected>Select Subdomain</option>";
+
+        // Show/hide new domain text box based on selection
+        if (selectedDomain === 'other') {
+            newDomainContainer.style.display = 'block';
+            newSubdomainContainer.style.display = 'block';
+
+            // Add "Other" option to subdomain dropdown
+            var otherOption = document.createElement('option');
+            otherOption.text = 'Other';
+            subdomainSelect.add(otherOption);
+        } else {
+            newDomainContainer.style.display = 'none';
+            newSubdomainContainer.style.display = 'none';
+
+            // Populate subdomains based on the selected domain, removing duplicates
+            if (selectedDomain in allSubdomainsByDomain) {
+                var uniqueSubdomains = Array.from(new Set(allSubdomainsByDomain[selectedDomain]));
+
+                uniqueSubdomains.forEach(function (subdomain) {
+                    var option = document.createElement('option');
+                    option.value = subdomain;
+                    option.text = subdomain;
+                    subdomainSelect.add(option);
+                });
+            }
+        }
+    }
+
+    function validateForm() {
+        var domainSelect = document.getElementById('domain');
+        var newDomainInput = document.getElementById('newDomain');
+        var subdomainSelect = document.getElementById('subdomain');
+        var newSubdomainInput = document.getElementById('newSubdomain');
+
+        if (domainSelect.value === 'other' && newDomainInput.value.trim() === '') {
+            alert('Please enter a new domain.');
+            return false;
+        }
+
+        if (subdomainSelect.value === 'other' && newSubdomainInput.value.trim() === '') {
+            alert('Please enter a new subdomain.');
+            return false;
+        }
+
+        return true;
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

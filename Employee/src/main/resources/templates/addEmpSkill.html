@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Skill</title>
+</head>
+<body>
+    <h2>Add Skill</h2>
+    <form th:action="@{/addSkill}" method="post">
+        <label for="domain">Domain:</label>
+        <select id="domain" name="domain" required onchange="updateSubdomains()">
+            <option value="new">Add New Domain</option>
+            <option th:each="domain : ${allDomains}" th:value="${domain}" th:text="${domain}"></option>
+        </select>
+        <br>
+        <label for="skillname">Skill Name:</label>
+        <input type="text" id="skillname" name="skillname" required>
+        <br>
+        <label for="subdomain">Sub Domain:</label>
+        <select id="subdomain" name="subdomain" required>
+            <option value="new">Add New Subdomain</option>
+            <!-- Options for subdomains will be dynamically updated using JavaScript -->
+        </select>
+        <br>
+        <button type="submit">Add Skill</button>
+    </form>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var allSubdomainsByDomain = /*[[${allSubdomainsByDomain}]]*/ {}; // Map of domains to subdomains
+
+        function updateSubdomains() {
+            var domainSelect = document.getElementById('domain');
+            var subdomainSelect = document.getElementById('subdomain');
+            var selectedDomain = domainSelect.value;
+
+            // Clear existing options
+            subdomainSelect.innerHTML = "<option value='new'>Add New Subdomain</option>";
+
+            // Populate subdomains based on the selected domain
+            if (selectedDomain in allSubdomainsByDomain) {
+                allSubdomainsByDomain[selectedDomain].forEach(function(subdomain) {
+                    var option = document.createElement('option');
+                    option.value = subdomain;
+                    option.text = subdomain;
+                    subdomainSelect.add(option);
+                });
+            }
+        }
+
+        // Initial population of subdomains based on the default selected domain
+        updateSubdomains();
+        /*]]>*/
+    </script>
+</body>
+</html>
